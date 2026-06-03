@@ -1,0 +1,184 @@
+class DisasterReliefPlanner:
+    def __init__(self):
+        self.resources = {}
+        self.allocations = []
+
+    def add_resource(self):
+        name = input("Enter Resource Name: ")
+
+        quantity_input = input("Enter Quantity: ")
+
+        quantity = ''.join(filter(str.isdigit, quantity_input))
+
+        if quantity == "":
+            print("Invalid Quantity!\n")
+            return
+
+        quantity = int(quantity)
+
+        unit = input("Enter Unit (kg/packets/bottles/etc): ")
+
+        if name in self.resources:
+            self.resources[name]["quantity"] += quantity
+        else:
+            self.resources[name] = {
+                "quantity": quantity,
+                "unit": unit
+            }
+
+        print("Resource added successfully.\n")
+
+    def view_resources(self):
+        if not self.resources:
+            print("No resources available.\n")
+            return
+
+        print("\n========== AVAILABLE RESOURCES ==========")
+
+        for resource, details in self.resources.items():
+            print(
+                f"{resource:<20} "
+                f"{details['quantity']} {details['unit']}"
+            )
+
+        print()
+
+    def update_resource(self):
+        name = input("Enter Resource Name to Update: ")
+
+        if name not in self.resources:
+            print("Resource not found.\n")
+            return
+
+        quantity_input = input("Enter New Quantity: ")
+
+        quantity = ''.join(filter(str.isdigit, quantity_input))
+
+        if quantity == "":
+            print("Invalid Quantity!\n")
+            return
+
+        quantity = int(quantity)
+
+        unit = input("Enter Unit: ")
+
+        self.resources[name]["quantity"] = quantity
+        self.resources[name]["unit"] = unit
+
+        print("Resource updated successfully.\n")
+
+    def allocate_resource(self):
+        area = input("Enter Disaster Area Name: ")
+
+        resource = input("Enter Resource Name: ")
+
+        if resource not in self.resources:
+            print("Resource not found.\n")
+            return
+
+        quantity_input = input("Enter Quantity to Allocate: ")
+
+        quantity = ''.join(filter(str.isdigit, quantity_input))
+
+        if quantity == "":
+            print("Invalid Quantity!\n")
+            return
+
+        quantity = int(quantity)
+
+        available = self.resources[resource]["quantity"]
+
+        if quantity > available:
+            print(
+                f"Insufficient Resources! Available: {available}\n"
+            )
+            return
+
+        self.resources[resource]["quantity"] -= quantity
+
+        self.allocations.append({
+            "area": area,
+            "resource": resource,
+            "quantity": quantity,
+            "unit": self.resources[resource]["unit"]
+        })
+
+        print("Resource allocated successfully.\n")
+
+    def view_allocations(self):
+        if not self.allocations:
+            print("No allocation history available.\n")
+            return
+
+        print("\n========== ALLOCATION HISTORY ==========")
+
+        for i, allocation in enumerate(self.allocations, start=1):
+            print(
+                f"{i}. Area: {allocation['area']} | "
+                f"Resource: {allocation['resource']} | "
+                f"Allocated: {allocation['quantity']} "
+                f"{allocation['unit']}"
+            )
+
+        print()
+
+    def resource_summary(self):
+        print("\n========== RESOURCE SUMMARY ==========")
+
+        total_resources = len(self.resources)
+
+        total_quantity = sum(
+            details["quantity"]
+            for details in self.resources.values()
+        )
+
+        print("Total Resource Types :", total_resources)
+        print("Total Available Quantity :", total_quantity)
+        print()
+
+
+def main():
+    planner = DisasterReliefPlanner()
+
+    while True:
+        print("========================================")
+        print("  DISASTER RELIEF RESOURCE PLANNER")
+        print("========================================")
+        print("1. Add Resource")
+        print("2. View Resources")
+        print("3. Update Resource")
+        print("4. Allocate Resource")
+        print("5. View Allocation History")
+        print("6. Resource Summary")
+        print("7. Exit")
+
+        choice = input("\nEnter Choice: ")
+
+        if choice == "1":
+            planner.add_resource()
+
+        elif choice == "2":
+            planner.view_resources()
+
+        elif choice == "3":
+            planner.update_resource()
+
+        elif choice == "4":
+            planner.allocate_resource()
+
+        elif choice == "5":
+            planner.view_allocations()
+
+        elif choice == "6":
+            planner.resource_summary()
+
+        elif choice == "7":
+            print("\nThank You For Using Disaster Relief Resource Planner.")
+            break
+
+        else:
+            print("Invalid Choice! Please Try Again.\n")
+
+
+if __name__ == "__main__":
+    main()
